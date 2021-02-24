@@ -48,4 +48,18 @@ def api_add():
             connection.close()
             print("PostgreSQL connection is closed")
 
+@app.route('/api/pets', methods=["GET"])
+def api_get_pets():
+    params = config()
+    connection = psycopg2.connect(**params)
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
+    postgreSQL_select_Query = 'SELECT * FROM "pets";'
+    # execute query
+    cursor.execute(postgreSQL_select_Query)
+    # Selecting rows from table using cursor.fetchall
+    pets = cursor.fetchall()
+    # respond, status 200 is added for us
+    print(pets)
+    return jsonify(pets)
+
 app.run()
