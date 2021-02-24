@@ -16,7 +16,7 @@
         [ ] - Remove owner if no pets assigned
 
 ## Table structures
-    db - python-pet-hotel
+    db - <name goes here>
     OWNERS
         ID serial key
         NAME varchar
