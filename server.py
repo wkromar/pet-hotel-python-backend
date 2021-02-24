@@ -7,12 +7,12 @@ from config import config
 app = flask.Flask(__name__)
 
 
-@app.route('/api/owners/all', methods=['GET'])
+@app.route('/api/owners', methods=['GET'])
 def api_all():
     params = config()
     connection = psycopg2.connect(**params)
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    postgreSQL_select_Query = 'SELECT * FROM "owners";'
+    postgreSQL_select_Query = 'SELECT "owners".id, "owners".name, COUNT("pets") FROM "owners" JOIN "pets" ON "owners".id = "pets".owner_id GROUP BY "owners".id;'
     # execute query
     cursor.execute(postgreSQL_select_Query)
     # Selecting rows from table using cursor.fetchall
