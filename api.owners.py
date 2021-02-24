@@ -1,24 +1,39 @@
 import flask
 import psycopg2
 from flask import request, jsonify, make_response
-from psycopg2.extras import RealDictCursor
 
 from config import config
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
 
 
 # @app.route('/', methods=['GET'])
 # def home():
 #     return "<h1>Hello World!</h1><p>From Python and Flask!</p>"
 
+@app.route('/api/owners/all', methods=['GET'])
+def api_all():
+    params = config()
+    connection = psycopg2.connect(**params)
+    cursor = connection.cursor()
+    postgreSQL_select_Query = 'SELECT * FROM "owners";'
+    # execute query
+    cursor.execute(postgreSQL_select_Query)
+    # Selecting rows from table using cursor.fetchall
+    owners = cursor.fetchall()
+    # respond, status 200 is added for us
+    print(owners)
+    return jsonify(owners)
+    # for row in owners:
+    #     print("Id = ", row[0], )
+    #     print("Title = ", row[1])
+    #     print("Author  = ", row[2], "\n")
 
-@app.route('/api/books/add', methods=['POST'])
+
+@app.route('/api/owners/add', methods=['POST'])
 def api_add():
-    # print(request.form)
-    title = request.form['title']
-    author = request.form['author']
+    print(request.form)
+    name = request.form['name']
     try:
         params = config()
         connection = psycopg2.connect(**params)
@@ -51,26 +66,5 @@ def api_add():
             cursor.close()
             connection.close()
             print("PostgreSQL connection is closed")
-
-
-@app.route('/api/books/all', methods=['GET'])
-def api_all():
-    params = config()
-    connection = psycopg2.connect(**params)
-    
-    cursor = connection.cursor()
-    postgreSQL_select_Query = 'SELECT * FROM "owners"'
-    # execute query
-    cursor.execute(postgreSQL_select_Query)
-    # Selecting rows from mobile table using cursor.fetchall
-    owners = cursor.fetchall()
-    # respond, status 200 is added for us
-    return jsonify(owners)
-
-    # for row in books:
-    #     print("Id = ", row[0], )
-    #     print("Title = ", row[1])
-    #     print("Author  = ", row[2], "\n")
-
 
 app.run()
