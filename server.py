@@ -7,19 +7,23 @@ from config import config
 app = flask.Flask(__name__)
 
 
-@app.route('/api/owners/all', methods=['GET'])
+@app.route('/api/owners', methods=['GET'])
 def api_all():
     params = config()
     connection = psycopg2.connect(**params)
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    postgreSQL_select_Query = 'SELECT * FROM "owners";'
-    # execute query
-    cursor.execute(postgreSQL_select_Query)
-    # Selecting rows from table using cursor.fetchall
-    owners = cursor.fetchall()
-    # respond, status 200 is added for us
-    print(owners)
-    return jsonify(owners)
+    if request.method == 'GET'
+        postgreSQL_select_Query = 'SELECT "owners".id, "owners".name, COUNT("pets") FROM "owners" JOIN "pets" ON "owners".id = "pets".owner_id GROUP BY "owners".id;'
+        # execute query
+        cursor.execute(postgreSQL_select_Query)
+        # Selecting rows from table using cursor.fetchall
+        owners = cursor.fetchall()
+        # respond, status 200 is added for us
+        print(owners)
+        return jsonify(owners)
+    else:
+        print('no routes found')
+        return 'no routes found'
 
 
 # !!! THIS ROUTE IS VERY INCOMPLETE !!!
@@ -48,6 +52,7 @@ def api_add():
             connection.close()
             print("PostgreSQL connection is closed")
 
+
 @app.route('/api/pets', methods=["GET"])
 def api_get_pets():
     params = config()
@@ -61,5 +66,6 @@ def api_get_pets():
     # respond, status 200 is added for us
     print(pets)
     return jsonify(pets)
+
 
 app.run()
