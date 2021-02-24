@@ -11,7 +11,7 @@ app = flask.Flask(__name__)
 def api_all():
     params = config()
     connection = psycopg2.connect(**params)
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
     postgreSQL_select_Query = 'SELECT * FROM "owners";'
     # execute query
     cursor.execute(postgreSQL_select_Query)
