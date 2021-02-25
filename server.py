@@ -12,7 +12,7 @@ def api_all():
     params = config()
     connection = psycopg2.connect(**params)
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    if request.method == 'GET'
+    if request.method == 'GET':
         postgreSQL_select_Query = 'SELECT "owners".id, "owners".name, COUNT("pets") FROM "owners" JOIN "pets" ON "owners".id = "pets".owner_id GROUP BY "owners".id;'
         # execute query
         cursor.execute(postgreSQL_select_Query)
@@ -78,7 +78,7 @@ def delete(id):
     postgreSQL_select_Query ='DELETE FROM "pets" WHERE id=%s'
     cursor.execute(postgreSQL_select_Query, (id,))
     connection.commit()
-    return "delete route"
+    return make_response(jsonify(id), 200)
 
 
 app.run()

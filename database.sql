@@ -25,3 +25,6 @@ VALUES (1, 'Roux', 'Golden Lab mix', 'Golden'), (3, 'Carl', 'Pomeranian', 'White
 
 DROP TABLE "owners";
 DROP TABLE "pets";
+
+
+SELECT "owners".*, COUNT("pets".id) AS "pet_count" FROM "owners" LEFT JOIN "pets" ON "owners".id = "pets".owner_id GROUP BY "owners".id, "pets".id;
