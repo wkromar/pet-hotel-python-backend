@@ -50,32 +50,6 @@ def api_all():
         return 'no routes found'
 
 
-# !!! THIS ROUTE IS VERY INCOMPLETE !!!
-# @app.route('/api/owners/add', methods=['POST'])
-# def api_add():
-#     print(request.form)
-#     # name = request.form['name']
-#     try:
-#         params = config()
-#         connection = psycopg2.connect(**params)
-#         # Avoid getting arrays of arrays!
-#         cursor = connection.cursor()
-#     except (Exception, psycopg2.Error) as error:
-#         # there was a problem
-#         if(connection):
-#             print("Failed to post owner", error)
-#             # respond with error
-#             result = {'status': 'ERROR'}
-#             return make_response(jsonify(result), 500)
-#     finally:
-#         # closing database connection.
-#         if(connection):
-#             # clean up our connections
-#             cursor.close()
-#             connection.close()
-#             print("Post owner connection is closed")
-
-
 @app.route('/api/owners/<id>', methods=['DELETE'])
 def api_delete_owners(id):
     conn = None
@@ -94,19 +68,73 @@ def api_delete_owners(id):
     return make_response(jsonify(id), 200)
 
 
-@app.route('/api/pets', methods=["GET"])
+@app.route('/api/pets', methods=["GET", "POST"])
 def api_get_pets():
     params = config()
     connection = psycopg2.connect(**params)
     cursor = connection.cursor(cursor_factory=RealDictCursor)
-    postgreSQL_select_Query = 'SELECT * FROM "pets";'
-    # execute query
-    cursor.execute(postgreSQL_select_Query)
-    # Selecting rows from table using cursor.fetchall
-    pets = cursor.fetchall()
-    # respond, status 200 is added for us
-    print(pets)
-    return jsonify(pets)
+    if request.method == "GET":
+        postgreSQL_select_Query = 'SELECT * FROM "pets";'
+        # execute query
+        cursor.execute(postgreSQL_select_Query)
+        # Selecting rows from table using cursor.fetchall
+        pets = cursor.fetchall()
+        # respond, status 200 is added for us
+        print(pets)
+        return jsonify(pets)
+    elif request.method == "POST":
+        new_owner_id = request.get_json()['owner_id']
+        new_pet_name = request.get_json()['pet_name']
+        new_breed = request.get_json()['breed']
+        new_color = request.get_json()['color']
+        try:
+            query = 'INSERT INTO "pets" ("owner_id", "pet_name", "breed", "color") VALUES(%s, %s, %s, %s);'
+            cursor.execute(query, (new_owner_id, new_pet_name, new_breed, new_color, ))
+            connection.commit()
+            result={'status': 'CREATED'}
+            return make_response(jsonify(result), 201)
+        except (Exception, psycopg2.Error) as error:
+            if(connection):
+                print("Failed to insert owner", error)
+                # respond with error
+                result={'status': 'ERROR'}
+                return make_response(jsonify(result), 500)
+        finally:
+            # closing database connection.
+            if(connection):
+                # clean up our connections
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+    else:
+        print('no routes found')
+        return 'no routes found'
+
+    # elif request.method == 'POST':
+    #     print('in post')
+    #     owner = request.get_json()['name']
+    #     print(owner)
+    #     try:
+    #         query = 'INSERT INTO "owners" ("name") VALUES (%s);'
+    #         print('in try')
+    #         cursor.execute(query, (owner, ))
+    #         connection.commit()
+    #         result = {'status': 'CREATED'}
+    #         return make_response(jsonify(result), 201)
+    #     except (Exception, psycopg2.Error) as error:
+    #         if(connection):
+    #             print("Failed to insert owner", error)
+    #             # respond with error
+    #             result = {'status': 'ERROR'}
+    #             return make_response(jsonify(result), 500)
+    #     finally:
+    #         # closing database connection.
+    #         if(connection):
+    #             # clean up our connections
+    #             cursor.close()
+    #             connection.close()
+    #             print("PostgreSQL connection is closed")
+
 
 delete pets route
 @app.route('/api/pets/<id>', methods=["DELETE"])
