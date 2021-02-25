@@ -76,6 +76,24 @@ def api_all():
 #             print("Post owner connection is closed")
 
 
+@app.route('/api/owners/<id>', methods=['DELETE'])
+def api_delete_owners(id):
+    conn = None
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute('DELETE FROM "owners" WHERE "id" = %s', (id,))
+        conn.commit()
+        cursor.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+    return make_response(jsonify(id), 200)
+
+
 @app.route('/api/pets', methods=["GET"])
 def api_get_pets():
     params = config()
