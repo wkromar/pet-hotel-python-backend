@@ -22,9 +22,3 @@ VALUES (2, 'Dave', 'Black Lab', 'Black', '2/2/2021'), (4, 'Bruce', 'Tabby', 'Bro
 
 INSERT INTO "pets" ("owner_id", "pet_name", "breed", "color")
 VALUES (1, 'Roux', 'Golden Lab mix', 'Golden'), (3, 'Carl', 'Pomeranian', 'White');
-
-DROP TABLE "owners";
-DROP TAner_id GROUP BY "owners".id, "pets".id;BLE "pets";
-
-
-SELECT "owners".*, COUNT("pets".id) AS "pet_count" FROM "owners" LEFT JOIN "pets" ON "owners".id = "pets".ow
